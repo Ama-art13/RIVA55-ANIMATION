@@ -1,0 +1,413 @@
+<title>Crivel Carosello</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:ital,wght@0,500;0,800;1,500;1,700;1,800;1,900&family=IBM+Plex+Mono:wght@500&display=swap">
+<style>
+/* Layout: one 4:5 Instagram frame centred, controls and caption underneath, like a phone post */
+:root{
+  --paper:#F6F3EC;      /* label stock */
+  --ink:#1D1D1B;        /* label ink */
+  --wash:#E2DFD7;       /* label grey */
+  --pencil:#9C978B;     /* construction lines */
+  --bg:#ECE9E1; --fg:#1D1D1B; --muted:#6B675E; --line:#CFCAC0; --btn:#FFFFFF;
+  --display:"Archivo", "Helvetica Neue", Arial, sans-serif;
+  --mono:"IBM Plex Mono", ui-monospace, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#161614;--fg:#EDEAE2;--muted:#A19C91;--line:#34322E;--btn:#24231F;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#161614;--fg:#EDEAE2;--muted:#A19C91;--line:#34322E;--btn:#24231F;color-scheme:dark}
+html,body{height:100%}
+body{background:var(--bg);color:var(--fg);font-family:var(--display);padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:24px 40px}
+.wrap{max-width:560px;margin:0 auto;display:flex;flex-direction:column;gap:14px}
+.top{display:flex;justify-content:space-between;align-items:baseline;gap:12px}
+.top h1{font:italic 900 22px/1 var(--display);letter-spacing:-.01em;text-transform:uppercase;margin:0}
+.top span{font:500 13px/1.3 var(--mono);color:var(--muted)}
+.frame{position:relative;width:100%;aspect-ratio:4/5;max-width:100%;overflow:hidden;background:var(--paper);touch-action:pan-y;user-select:none;-webkit-user-select:none;cursor:grab}
+.track{position:absolute;inset:0;display:flex;transition:transform .45s cubic-bezier(.2,.8,.2,1)}
+.cell{flex:0 0 100%;height:100%;position:relative;overflow:hidden}
+.cell .stage{transform-origin:0 0}
+.nav{position:absolute;top:50%;translate:0 -50%;width:40px;height:40px;border-radius:50%;border:0;background:rgba(246,243,236,.92);color:#1D1D1B;font:700 20px/1 var(--display);cursor:pointer;box-shadow:0 1px 4px rgba(0,0,0,.18)}
+.nav:focus-visible,.ctl button:focus-visible{outline:3px solid #1D1D1B;outline-offset:2px}
+.nav.prev{left:10px}.nav.next{right:10px}
+.nav[disabled]{opacity:0;pointer-events:none}
+.ctl{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.dots{display:flex;gap:6px}
+.dots i{width:7px;height:7px;border-radius:50%;background:var(--line);transition:background .2s}
+.dots i.on{background:#3897F0}
+.ctl button{font:500 13px/1 var(--mono);background:var(--btn);color:var(--fg);border:1px solid var(--line);padding:9px 12px;border-radius:999px;cursor:pointer}
+.cap{border-top:1px solid var(--line);padding-top:14px;display:flex;flex-direction:column;gap:8px}
+.cap h2{font:italic 800 14px/1 var(--display);text-transform:uppercase;letter-spacing:.04em;margin:0;color:var(--muted)}
+.cap p{margin:0;font:500 15px/1.5 var(--display);white-space:pre-line;max-width:65ch}
+.cap .row{display:flex;gap:8px;flex-wrap:wrap}
+
+/* ---------- the 1080×1350 stage ---------- */
+.stage{position:absolute;left:0;top:0;width:1080px;height:1350px;overflow:hidden;background:var(--paper);color:var(--ink);font-family:var(--display)}
+.stage *{position:absolute}
+.grp{left:0;top:0;width:2700px;height:2800px;transform-origin:0 0}
+.grp img{display:block}
+.hl{left:72px;top:112px;font:italic 900 80px/.98 var(--display);text-transform:uppercase;letter-spacing:-.025em;margin:0}
+.hl .ln{position:relative;display:block;overflow:hidden;padding:0 12px 6px 0;margin-bottom:-6px}
+.hl .ln span{position:relative;display:block;white-space:nowrap}
+.sub{left:74px;font:italic 500 34px/1.28 var(--display);letter-spacing:-.005em;width:760px;margin:0}
+.band{left:0;top:1190px;width:1080px;height:160px;background:var(--paper);z-index:4}
+.ground{z-index:5;left:0;top:1188px;width:1080px;height:5px;background:var(--ink);transform-origin:0 50%}
+.foot{z-index:5;top:1236px;left:72px;right:72px;height:40px;font:italic 800 24px/40px var(--display);letter-spacing:.06em;text-transform:uppercase}
+.foot b{position:absolute;left:0;font-weight:800}
+.foot em{position:absolute;right:0;font:500 22px/40px var(--mono);font-style:normal;letter-spacing:0}
+.glyph{font:500 30px/1 var(--mono);white-space:nowrap}
+svg.full{left:0;top:0;width:1080px;height:1350px;overflow:visible}
+.grain{left:0;top:0;width:1080px;height:1350px;pointer-events:none;opacity:.07;mix-blend-mode:multiply}
+
+body.render{padding:0;background:var(--paper)}
+body.render .wrap{display:none}
+#rstage{position:fixed;left:0;top:0;width:1080px;height:1350px}
+@media (prefers-reduced-motion: reduce){.track{transition:none}}
+</style>
+
+<div class="wrap" id="app">
+  <div class="top"><h1>Crivel · Riva55</h1><span id="count">1 / 9</span></div>
+  <div class="frame" id="frame" tabindex="0" aria-label="Carosello animato, usa le frecce per scorrere">
+    <div class="track" id="track"></div>
+    <button class="nav prev" id="prev" aria-label="Slide precedente">‹</button>
+    <button class="nav next" id="next" aria-label="Slide successiva">›</button>
+  </div>
+  <div class="ctl">
+    <div class="dots" id="dots"></div>
+    <div class="row" style="display:flex;gap:8px">
+      <button id="replay">↺ Rivedi</button>
+      <button id="pause">❚❚ Pausa</button>
+    </div>
+  </div>
+  <div class="cap">
+    <h2>Didascalia proposta</h2>
+    <p id="captxt">Massimo è viticoltore. È anche ingegnere, ma il vino non gli esce mai dalla testa.
+
+In etichetta lo vedete alla scrivania, con un imbuto in testa. Quell'imbuto ha una forma precisa: è il Crivel, la sua riva più significativa, che dà il nome a questo vino.
+
+Crivel è un bianco frizzante col fondo: rifermenta in bottiglia e tiene i suoi lieviti. Verticale, sapido, fresco.
+
+#riva55 #crivel #colfondo #vinonaturale #rifermentato</p>
+    <div class="row"><button id="copy">Copia didascalia</button></div>
+  </div>
+</div>
+
+<script>
+const A = {/*ASSETS*/};
+const INFO = {scena:{x:732,y:286,w:1832,h:2170},imbuto:{x:1276,y:288,w:590,h:784},crivel:{x:130,y:78,w:1408,h:823},descr:{x:141,y:1019,w:780,h:402},firma:{x:1960,y:2420,w:667,h:314}};
+const W=1080,H=1350,GROUND=1188,N=9;
+
+/* ---------- maths ---------- */
+const cl=(x,a=0,b=1)=>Math.min(b,Math.max(a,x));
+const pr=(t,a,b)=>cl((t-a)/(b-a));
+const lerp=(a,b,k)=>a+(b-a)*k;
+const eo=k=>1-Math.pow(1-k,3);
+const eio=k=>k<.5?4*k*k*k:1-Math.pow(-2*k+2,3)/2;
+const ei=k=>k*k;
+const back=k=>{const c=1.6;return 1+(c+1)*Math.pow(k-1,3)+c*Math.pow(k-1,2)};
+const bounce=k=>{const n=7.5625,d=2.75;if(k<1/d)return n*k*k;if(k<2/d)return n*(k-=1.5/d)*k+.75;if(k<2.5/d)return n*(k-=2.25/d)*k+.9375;return n*(k-=2.625/d)*k+.984375};
+function rng(seed){return()=>{seed|=0;seed=seed+0x6D2B79F5|0;let t=Math.imul(seed^seed>>>15,1|seed);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+
+/* ---------- dom helpers ---------- */
+const NS='http://www.w3.org/2000/svg';
+function el(tag,cls,parent,html){const e=document.createElement(tag);if(cls)e.className=cls;if(html!=null)e.innerHTML=html;if(parent)parent.appendChild(e);return e}
+function sv(tag,attrs,parent){const e=document.createElementNS(NS,tag);for(const k in attrs)e.setAttribute(k,attrs[k]);if(parent)parent.appendChild(e);return e}
+function img(key,parent,info=INFO[key]){const i=el('img','',parent);i.src=A[key];i.alt='';i.draggable=false;Object.assign(i.style,{left:info.x+'px',top:info.y+'px',width:info.w+'px',height:info.h+'px'});return i}
+function group(st){return el('div','grp',st)}
+// put hi-res label point (hx,hy) at stage point (sx,sy) with scale s
+function cam(g,hx,hy,sx,sy,s){g.style.transform=`translate(${sx-hx*s}px,${sy-hy*s}px) scale(${s})`}
+function camLerp(g,a,b,k){const s=Math.exp(lerp(Math.log(a[4]),Math.log(b[4]),k));cam(g,lerp(a[0],b[0],k),lerp(a[1],b[1],k),lerp(a[2],b[2],k),lerp(a[3],b[3],k),s)}
+function headline(st,lines,o={}){const h=el('h2','hl',st);if(o.size)h.style.fontSize=o.size+'px';if(o.top!=null)h.style.top=o.top+'px';if(o.left!=null)h.style.left=o.left+'px';return lines.map(t=>el('span','',el('span','ln',h),t))}
+function showLines(spans,t,t0,gap=.12,d=.55){spans.forEach((s,i)=>{const k=eo(pr(t,t0+i*gap,t0+i*gap+d));s.style.transform=`translateY(${(1-k)*140}%)`})}
+function sub(st,txt,top){const p=el('p','sub',st,txt);p.style.top=top+'px';return p}
+function fade(e,t,t0,d=.5,dy=18){const k=eo(pr(t,t0,t0+d));e.style.opacity=k;e.style.transform=`translateY(${(1-k)*dy}px)`}
+function chrome(st,i,{band=true,num=true}={}){
+  if(band) el('div','band',st);
+  const g=el('div','ground',st);
+  const f=el('div','foot',st);el('b','',f,'Crivel — Riva55');if(num)el('em','',f,String(i+1).padStart(2,'0')+' / 0'+N);
+  return g;
+}
+function grain(st){const s=sv('svg',{class:'grain',viewBox:'0 0 1080 1350'},st);const f=sv('filter',{id:'gr'+Math.random().toString(36).slice(2,7)},s);sv('feTurbulence',{type:'fractalNoise',baseFrequency:'.9',numOctaves:'2',seed:'4'},f);sv('feColorMatrix',{values:'0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 1.4 -.35'},f);sv('rect',{width:1080,height:1350,filter:`url(#${f.id})`},s)}
+
+/* CRIVEL letters: clip polygons in % of the lettering box */
+const LETTERS=[
+  'polygon(0 0,18.8% 0,18.8% 100%,0 100%)',
+  'polygon(18.8% 0,36% 0,36% 57%,34% 100%,18.8% 100%)',
+  'polygon(36% 0,50% 0,50% 52%,36% 57%)',
+  'polygon(34% 57%,50% 52%,50% 24%,57.5% 24%,57.5% 100%,34% 100%)',
+  'polygon(57.5% 0,79% 0,79% 100%,57.5% 100%)',
+  'polygon(79% 0,100% 0,100% 100%,79% 100%)'];
+function lettering(g){const parts=LETTERS.map(c=>{const i=img('crivel',g);i.style.clipPath=c;i.style.transformOrigin='50% 60%';return i});const full=img('crivel',g);return{parts,full}}
+function popLetters(L,t,t0,gap=.13){
+  L.parts.forEach((p,i)=>{const k=pr(t,t0+i*gap,t0+i*gap+.5);const b=back(k);p.style.opacity=cl(k*3);p.style.transform=`translateY(${(1-b)*90}px) rotate(${(1-b)*(i%2?8:-8)}deg) scale(${.6+.4*b})`});
+  const done=t>=t0+(L.parts.length-1)*gap+.5;L.full.style.opacity=done?1:0;L.parts.forEach(p=>p.style.visibility=done?'hidden':'visible');
+}
+
+/* ---------- slides ---------- */
+const SLIDES=[];
+const S3END=[1570,700,610,770,.85];
+
+/* 1 — hook: the funnel falls in */
+SLIDES.push({dur:6.5,build(st,i){
+  const ground=chrome(st,i);
+  const sh=el('div','',st);Object.assign(sh.style,{left:'390px',top:(GROUND-14)+'px',width:'420px',height:'26px',borderRadius:'50%',background:'var(--ink)'});
+  const f=el('img','',st);f.src=A.imbuto;f.alt='';Object.assign(f.style,{width:(590*.98)+'px',height:(784*.98)+'px',left:(600-295*.98)+'px',top:(GROUND-784*.98+6)+'px',transformOrigin:'50% 100%'});
+  const h=headline(st,['Cosa ci fa','un imbuto','in testa a un','viticoltore?'],{size:76});
+  const sw=el('div','glyph',st,'scorri →');Object.assign(sw.style,{left:'72px',top:'1120px',font:'italic 800 30px/1 var(--display)',textTransform:'uppercase',letterSpacing:'.04em'});
+  return{f,sh,h,sw,ground};
+},update(o,t){
+  const k=pr(t,.15,1.25),b=bounce(k);
+  const y=(1-b)*-1150, r=(1-eo(pr(t,.15,1.6)))*-38 + (t>1.6?Math.sin((t-1.6)*2.2)*1.6:0);
+  o.f.style.transform=`translateY(${y}px) rotate(${r}deg)`;
+  o.sh.style.opacity=.10*b;o.sh.style.transform=`scaleX(${.4+.6*b})`;
+  showLines(o.h,t,1.1,.13);
+  const a=pr(t,2.4,2.8);o.sw.style.opacity=a;o.sw.style.transform=`translateX(${Math.sin(Math.max(0,t-2.4)*4)*8}px)`;
+}});
+
+/* 2 — first of all, a grape grower */
+SLIDES.push({dur:7,build(st,i){
+  chrome(st,i);
+  const svg=sv('svg',{class:'full',viewBox:'0 0 1080 1350'},st);
+  const ridge=x=>520+470*Math.pow(x/1080,1.6);
+  let d='';for(let x=0;x<=1080;x+=12)d+=(x?'L':'M')+x+' '+ridge(x).toFixed(1)+' ';
+  const hill=sv('path',{d:d+`L 1080 ${GROUND} L 0 ${GROUND} Z`,fill:'var(--wash)'},svg);
+  const edge=sv('path',{d,fill:'none',stroke:'var(--ink)','stroke-width':7,'stroke-linecap':'round','stroke-dasharray':1400,'stroke-dashoffset':1400},svg);
+  const sun=sv('circle',{cx:880,cy:560,r:58,fill:'none',stroke:'var(--ink)','stroke-width':6,'stroke-dasharray':365,'stroke-dashoffset':365},svg);
+  const rows=[],r=rng(5);
+  for(let k=0;k<4;k++){
+    const off=120+k*130,pts=[];for(let x=40;x<=1040;x+=12){const y=ridge(x)+off;if(y<GROUND-40)pts.push([x,y])}
+    if(pts.length<4)continue;
+    const wd=pts.map((q,j)=>(j?'L':'M')+q[0]+' '+(q[1]-46).toFixed(1)).join(' ');
+    const wire=sv('path',{d:wd,fill:'none',stroke:'var(--ink)','stroke-width':3,'stroke-dasharray':1300,'stroke-dashoffset':1300},svg);
+    const posts=[],vines=[];
+    for(let x=60;x<=1020;x+=96){const y=ridge(x)+off;if(y>GROUND-40)continue;
+      posts.push(sv('line',{x1:x,y1:y,x2:x,y2:y-60,stroke:'var(--ink)','stroke-width':6,'stroke-linecap':'round'},svg));
+      const vx=x+48,vy=ridge(vx)+off;if(vy>GROUND-40||vx>1040)continue;
+      const g=sv('g',{},svg);
+      sv('path',{d:`M ${vx} ${vy} C ${vx-6} ${vy-20} ${vx+6} ${vy-30} ${vx} ${vy-46}`,fill:'none',stroke:'var(--ink)','stroke-width':5,'stroke-linecap':'round'},g);
+      sv('ellipse',{cx:vx-16,cy:vy-52,rx:16,ry:10,fill:'var(--ink)',transform:`rotate(-25 ${vx-16} ${vy-52})`},g);
+      sv('ellipse',{cx:vx+16,cy:vy-54,rx:16,ry:10,fill:'var(--ink)',transform:`rotate(25 ${vx+16} ${vy-54})`},g);
+      const bunch=sv('g',{},g);[[0,0],[-9,0],[9,0],[-4.5,9],[4.5,9],[0,18]].forEach(([dx,dy])=>sv('circle',{cx:vx+dx+(r()-.5)*2,cy:vy-36+dy,r:6,fill:'var(--paper)',stroke:'var(--ink)','stroke-width':2.5},bunch));
+      g.style.transformBox='fill-box';g.style.transformOrigin='50% 100%';bunch.style.transformBox='fill-box';bunch.style.transformOrigin='50% 0';
+      vines.push({g,bunch,x:vx});
+    }
+    rows.push({wire,posts,vines,k});
+  }
+  const h=headline(st,['Massimo è','un viticoltore.']);
+  const s=sub(st,'Passa le giornate tra i filari,<br>sulle sue rive.',318);
+  return{hill,edge,sun,rows,h,s};
+},update(o,t){
+  showLines(o.h,t,.2,.13);fade(o.s,t,.8);
+  o.edge.setAttribute('stroke-dashoffset',1400*(1-eio(pr(t,0,1.2))));
+  o.hill.style.opacity=eo(pr(t,.7,1.4));
+  o.sun.setAttribute('stroke-dashoffset',365*(1-eio(pr(t,1,1.9))));o.sun.style.transform=`translateY(${Math.sin(t*.8)*4}px)`;
+  o.rows.forEach(rw=>{const t0=1.2+rw.k*.25;
+    rw.wire.setAttribute('stroke-dashoffset',1300*(1-eio(pr(t,t0+.3,t0+1.3))));
+    rw.posts.forEach((p,j)=>{const k=back(pr(t,t0+j*.05,t0+j*.05+.4));p.style.opacity=cl(k*3);p.style.transformBox='fill-box';p.style.transformOrigin='50% 100%';p.style.transform=`scaleY(${k})`});
+    rw.vines.forEach((v,j)=>{const a=back(pr(t,t0+.6+j*.06,t0+1+j*.06));v.g.style.opacity=cl(a*3);v.g.style.transform=`scale(${a}) rotate(${Math.sin(t*1.6+v.x*.02)*3*cl(a)}deg)`;
+      const b=back(pr(t,2.8+rw.k*.15+j*.04,3.2+rw.k*.15+j*.04));v.bunch.style.opacity=cl(b*3);v.bunch.style.transform=`scale(${b})`});
+  });
+}});
+
+/* 3 — and an engineer */
+SLIDES.push({dur:7,build(st,i){
+  chrome(st,i);
+  const g=group(st);img('scena',g);
+  const h=headline(st,['E anche','ingegnere.']);
+  const s=sub(st,'Quando non è in vigna,<br>progetta e calcola.',330);
+  const GL=[['Δh',790,330],['90°',950,330],['Σ F = 0',660,420],['± 0,01',890,420],['Ø 42',770,500],['1:50',950,500]];
+  const gl=GL.map(([t,x,y],j)=>{const e=el('div','glyph',st,t);Object.assign(e.style,{left:x+'px',top:y+'px'});return{e,x,y,j}});
+  // dimension line + compass circle
+  const svg=sv('svg',{class:'full',viewBox:'0 0 1080 1350'},st);
+  const dim=sv('path',{d:'M 668 1238 L 1012 1238 M 668 1226 L 668 1250 M 1012 1226 L 1012 1250',stroke:'var(--pencil)','stroke-width':3,fill:'none'},svg);
+  const circ=sv('circle',{cx:990,cy:615,r:34,stroke:'var(--ink)','stroke-width':3,fill:'none','stroke-dasharray':'214','stroke-dashoffset':'214'},svg);
+  const cross=sv('path',{d:'M 946 615 L 1034 615 M 990 571 L 990 659',stroke:'var(--ink)','stroke-width':2,fill:'none'},svg);
+  dim.style.display='none';
+  return{g,h,s,gl,circ,cross};
+},update(o,t){
+  const k=eo(pr(t,0,1.1));
+  cam(o.g,1648,2420,540+(1-k)*80,GROUND,.42);o.g.style.opacity=k;
+  showLines(o.h,t,.35,.13);fade(o.s,t,.9);
+  // monitor at stage ≈ (780,640): glyphs fly out of it
+  o.gl.forEach(({e,x,y,j})=>{const t0=1.7+j*.28,q=pr(t,t0,t0+.7),b=back(q);
+    const sx=lerp(790,x,eo(q)),sy=lerp(650,y,eo(q))+Math.sin((t-t0)*1.8+j)*6*cl(q*2);
+    e.style.opacity=cl(q*3);e.style.transform=`translate(${sx-x}px,${sy-y}px) scale(${.4+.6*b})`});
+  const c=pr(t,2.2,3.2);o.circ.setAttribute('stroke-dashoffset',214*(1-eio(c)));o.cross.style.opacity=pr(t,3,3.3);
+  o.circ.style.transform=`rotate(${t*20}deg)`;o.circ.style.transformOrigin='990px 615px';
+}});
+
+/* 3 — wine never leaves his head */
+SLIDES.push({dur:7,build(st,i){
+  chrome(st,i);
+  const g=group(st);img('scena',g);const fc=img('imbuto',g);fc.style.transformOrigin='50% 80%';
+  const svg=sv('svg',{class:'full',viewBox:'0 0 1080 1350'},st);
+  const drops=[];for(let j=0;j<10;j++){const g=sv('g',{},svg);sv('circle',{r:17,fill:j%3?'var(--wash)':'var(--paper)',stroke:'var(--ink)','stroke-width':4},g);sv('path',{d:'M -6 -8 A 9 9 0 0 1 4 -11',fill:'none',stroke:'var(--ink)','stroke-width':3,'stroke-linecap':'round'},g);if(j%4===0)sv('path',{d:'M 0 -17 L 3 -28',stroke:'var(--ink)','stroke-width':4,'stroke-linecap':'round'},g);drops.push(g)}
+  const h=headline(st,['Ma il vino','non gli esce','mai dalla testa.'],{size:76});
+  const s=sub(st,'Anche alla scrivania,<br>la testa resta in vigna.',372);
+  return{g,fc,drops,h,s};
+},update(o,t){
+  const A0=[1648,2420,540,GROUND,.42],A1=S3END;
+  camLerp(o.g,A0,A1,eio(pr(t,.1,1.7)));
+  showLines(o.h,t,1.3,.13);fade(o.s,t,2);
+  // spout opening in hi coords (1820,298) -> stage after zoom
+  const zk=eio(pr(t,.1,1.7));const sc=Math.exp(lerp(Math.log(A0[4]),Math.log(A1[4]),zk));
+  const ox=lerp(A0[2],A1[2],zk)+(1820-lerp(A0[0],A1[0],zk))*sc, oy=lerp(A0[3],A1[3],zk)+(298-lerp(A0[1],A1[1],zk))*sc;
+  let squash=0;
+  o.drops.forEach((d,j)=>{const t0=2.1+j*.5,q=pr(t,t0,t0+.75);
+    if(q<=0||q>=1){d.style.opacity=0;return}
+    const y=lerp(-60,oy+10,ei(q));d.style.opacity=1;d.setAttribute('transform',`translate(${ox+((j%3)-1)*4} ${y-14}) rotate(${q*200+j*40}) scale(${1-.35*pr(q,.85,1)})`);
+  });
+  o.drops.forEach((d,j)=>{const hit=2.1+j*.5+.75;const dt=t-hit;if(dt>0&&dt<.35)squash=Math.max(squash,Math.sin(dt/.35*Math.PI))});
+  o.fc.style.transform=`scale(${1+squash*.025},${1-squash*.03})`;
+}});
+
+/* 4 — the reveal: the funnel is the Crivel */
+SLIDES.push({dur:8.5,build(st,i){
+  chrome(st,i);
+  const svgTopo=sv('svg',{class:'full',viewBox:'0 0 1080 1350'},st);
+  const r=rng(7),topo=[];
+  for(let j=0;j<6;j++){let d='';const R=360+j*70;for(let a=0;a<=64;a++){const th=a/64*Math.PI*2;const rr=R+Math.sin(th*3+j)*26+Math.sin(th*5+j*2)*14;d+=(a?'L':'M')+(540+Math.cos(th)*rr*1.05).toFixed(1)+' '+(760+Math.sin(th)*rr*.92).toFixed(1)+' '}
+    const p=sv('path',{d:d+'Z',fill:'none',stroke:'var(--pencil)','stroke-width':2,'stroke-dasharray':'6 10'},svgTopo);topo.push(p)}
+  const g=group(st);const sc=img('scena',g);const fc=img('imbuto',g);
+  // vineyard rows, masked by the funnel silhouette
+  const I=INFO.imbuto;const rows=el('div','',g);Object.assign(rows.style,{left:I.x+'px',top:I.y+'px',width:I.w+'px',height:I.h+'px',WebkitMaskImage:`url(${A.imbuto})`,maskImage:`url(${A.imbuto})`,WebkitMaskSize:'100% 100%',maskSize:'100% 100%'});
+  const rs=sv('svg',{viewBox:`0 0 ${I.w} ${I.h}`,width:I.w,height:I.h,style:'left:0;top:0;overflow:visible'},rows);
+  const lines=[];for(let j=-14;j<30;j++){const x0=j*34;const ln=sv('line',{x1:x0-300,y1:I.h+40,x2:x0+420,y2:-80,stroke:'#1D1D1B','stroke-width':11,'stroke-linecap':'round','stroke-dasharray':'1000','stroke-dashoffset':'1000'},rs);lines.push(ln)}
+  const svg=sv('svg',{class:'full',viewBox:'0 0 1080 1350'},st);
+  const lead=sv('path',{d:'M 400 990 L 300 1080 L 72 1080',fill:'none',stroke:'var(--ink)','stroke-width':3,'stroke-dasharray':'470','stroke-dashoffset':'470'},svg);
+  const dot=sv('circle',{cx:400,cy:990,r:9,fill:'var(--ink)'},svg);
+  const tag=el('div','glyph',st,'RIVA · CRIVEL');Object.assign(tag.style,{left:'72px',top:'1094px',fontSize:'28px'});
+  const north=el('div','',st);north.innerHTML='<svg viewBox="0 0 60 90" width="60" height="90" style="position:static"><path d="M30 0 L48 50 L30 40 L12 50 Z" fill="#1D1D1B"/><text x="30" y="84" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="26" fill="#1D1D1B">N</text></svg>';Object.assign(north.style,{left:'960px',top:'350px'});
+  const h=headline(st,["Quell'imbuto","è il Crivel."]);
+  const s=sub(st,'Ha la forma della vigna<br>a cui tiene di più.',318);
+  return{g,sc,fc,lines,topo,lead,dot,tag,north,h,s};
+},update(o,t){
+  const A1=S3END,A2=[1571,680,520,800,.98];
+  camLerp(o.g,A1,A2,eio(pr(t,.9,2.3)));
+  o.sc.style.opacity=1-eo(pr(t,.2,1.2));
+  o.fc.style.opacity=1-.84*eio(pr(t,1.8,3.4));
+  o.lines.forEach((l,j)=>{const t0=1.8+j*.035,q=eio(pr(t,t0,t0+.9));l.setAttribute('stroke-dashoffset',1000*(1-q))});
+  o.topo.forEach((p,j)=>{p.style.opacity=pr(t,2.6+j*.15,3.2+j*.15)*.9});
+  showLines(o.h,t,2.8,.14);fade(o.s,t,3.5);
+  o.lead.setAttribute('stroke-dashoffset',470*(1-eio(pr(t,3.9,4.7))));o.dot.style.opacity=pr(t,3.8,4);
+  fade(o.tag,t,4.5,.4,10);fade(o.north,t,4.2,.5,-20);
+}});
+
+/* 5 — the vineyard names the wine */
+SLIDES.push({dur:7,build(st,i){
+  chrome(st,i);
+  const g=group(st);const fc=img('imbuto',g);const L=lettering(g);
+  const h=headline(st,['La vigna','dà il nome','al vino.']);
+  const s=sub(st,'Crivel: il nome della riva<br>scritto in etichetta.',1040);
+  return{g,fc,L,h,s};
+},update(o,t){
+  cam(o.g,1000,575,540,760,.56);
+  const k=eo(pr(t,0,.9));o.fc.style.transform=`translateY(${(1-k)*520}px) rotate(${(1-k)*25}deg)`;o.fc.style.opacity=k;o.fc.style.transformOrigin='50% 50%';
+  popLetters(o.L,t,.7);
+  showLines(o.h,t,2,.13);fade(o.s,t,2.6);
+}});
+
+/* 6 — col fondo */
+SLIDES.push({dur:8,build(st,i){
+  chrome(st,i);
+  const svg=sv('svg',{class:'full',viewBox:'0 0 1080 1350'},st);
+  const BOT='M 505 452 L 505 590 C 505 662 410 672 410 760 L 410 1160 Q 410 1186 436 1186 L 644 1186 Q 670 1186 670 1160 L 670 760 C 670 672 575 662 575 590 L 575 452 Z';
+  const defs=sv('defs',{},svg);const cp=sv('clipPath',{id:'botclip'},defs);sv('path',{d:BOT},cp);
+  const inside=sv('g',{'clip-path':'url(#botclip)'},svg);
+  const liquid=sv('rect',{x:400,y:1190,width:280,height:800,fill:'var(--wash)'},inside);
+  const r=rng(3);
+  const bub=[];for(let j=0;j<26;j++)bub.push({c:sv('circle',{r:3+r()*6,fill:'none',stroke:'var(--ink)','stroke-width':2.5},inside),x:430+r()*220,sp:90+r()*120,ph:r()*10,w:r()*6});
+  const sed=[];for(let j=0;j<170;j++)sed.push({c:sv('circle',{r:1.5+r()*3.2,fill:'var(--ink)'},inside),x:420+r()*240,y:1180-Math.pow(r(),2)*60,ph:r()*6.28,a:8+r()*30});
+  const out=sv('path',{d:BOT,fill:'none',stroke:'var(--ink)','stroke-width':7,'stroke-linejoin':'round'},svg);const len=2300;out.setAttribute('stroke-dasharray',len);
+  const cap=sv('g',{},svg);sv('rect',{x:496,y:432,width:88,height:30,rx:4,fill:'var(--ink)'},cap);for(let j=0;j<6;j++)sv('rect',{x:500+j*14,y:458,width:7,height:8,fill:'var(--ink)'},cap);
+  const lab=el('div','',st);Object.assign(lab.style,{left:'428px',top:'830px',width:'224px',height:'236px',background:'var(--paper)',outline:'3px solid var(--ink)',overflow:'hidden'});
+  const li=el('img','',lab);li.src=A.etichetta;li.alt='';Object.assign(li.style,{left:'8px',top:'8px',width:'208px',height:'220px'});
+  const h=headline(st,['Rifermentato','col fondo.']);
+  const s=sub(st,'Le bollicine nascono in bottiglia,<br>i lieviti restano sul fondo.',318);
+  return{out,len,liquid,bub,sed,cap,lab,h,s};
+},update(o,t){
+  showLines(o.h,t,.15,.13);fade(o.s,t,.7);
+  o.out.setAttribute('stroke-dashoffset',o.len*(1-eio(pr(t,.3,1.7))));
+  fade(o.cap,t,1.4,.4,-30);
+  const lv=lerp(1190,640,eio(pr(t,1.3,2.8)));o.liquid.setAttribute('y',lv);
+  fade(o.lab,t,2.4,.5,20);
+  const on=pr(t,2.6,3.2);
+  o.bub.forEach(b=>{const tt=Math.max(0,t-2.6)+b.ph;const y=1170-((tt*b.sp)%Math.max(1,1170-lv));b.c.setAttribute('cx',b.x+Math.sin(tt*3+b.w)*6);b.c.setAttribute('cy',y);b.c.style.opacity=on*(y>lv+8?1:0)});
+  // the lees: a lazy swirl that lifts and settles again
+  const lift=Math.sin(pr(t,3,7.6)*Math.PI);
+  o.sed.forEach(p=>{const tt=t*.8+p.ph;p.c.setAttribute('cx',p.x+Math.sin(tt)*10*lift);p.c.setAttribute('cy',p.y-lift*p.a*2.2+Math.cos(tt*1.3)*4*lift);p.c.style.opacity=pr(t,1.6,2.4)});
+}});
+
+/* 7 — vertical, savoury, fresh */
+SLIDES.push({dur:7,build(st,i){
+  chrome(st,i);
+  const svg=sv('svg',{class:'full',viewBox:'0 0 1080 1350'},st);
+  const v=sv('line',{x1:240,y1:0,x2:240,y2:GROUND,stroke:'var(--ink)','stroke-width':10,'stroke-dasharray':GROUND,'stroke-dashoffset':GROUND},svg);
+  const r=rng(11);
+  const salt=[];for(let j=0;j<16;j++){const s=sv('rect',{width:8+r()*8,height:8+r()*8,fill:'none',stroke:'var(--ink)','stroke-width':2.5},svg);salt.push({s,x:80+r()*120,y:200+r()*900,ph:r()*6})}
+  const bub=[];for(let j=0;j<12;j++)bub.push({c:sv('circle',{r:4+r()*7,fill:'none',stroke:'var(--ink)','stroke-width':2.5},svg),x:264+r()*30,sp:120+r()*120,ph:r()*20});
+  const mask=el('div','',st);Object.assign(mask.style,{left:'246px',top:'0',width:'834px',height:'1100px',overflow:'hidden'});
+  const words=['Verticale.','Sapido.','Fresco.'].map((w,j)=>{const e=el('div','',mask,w);Object.assign(e.style,{left:'44px',top:(250+j*190)+'px',font:'italic 900 116px/1 var(--display)',textTransform:'uppercase',letterSpacing:'-.03em',whiteSpace:'nowrap'});return e});
+  const s=sub(st,'Dritto e teso: grande sapidità,<br>grande freschezza.',870);s.style.left='292px';s.style.width='700px';
+  return{v,salt,bub,words,s};
+},update(o,t){
+  o.v.setAttribute('stroke-dashoffset',GROUND*(1-eio(pr(t,0,1.1))));
+  o.words.forEach((w,j)=>{const k=eo(pr(t,.9+j*.45,1.6+j*.45));w.style.transform=`translateX(${(1-k)*-760}px)`});
+  fade(o.s,t,2.6);
+  o.salt.forEach(p=>{const k=pr(t,2+p.ph*.15,2.4+p.ph*.15);p.s.setAttribute('x',p.x);p.s.setAttribute('y',p.y+Math.sin(t*1.2+p.ph)*8);p.s.style.opacity=k*(.55+.45*Math.sin(t*3+p.ph))});
+  o.bub.forEach(b=>{const tt=Math.max(0,t-1.2)+b.ph;const y=GROUND-20-((tt*b.sp)%(GROUND-40));b.c.setAttribute('cx',b.x+Math.sin(tt*2.5)*5);b.c.setAttribute('cy',y);b.c.style.opacity=pr(t,1.2,1.6)});
+}});
+
+/* 8 — the whole label */
+SLIDES.push({dur:8,build(st,i){
+  chrome(st,i,{band:false,num:false});
+  const g=group(st);const sc=img('scena',g);const L=lettering(g);const de=img('descr',g);const fi=img('firma',g);
+  const h=headline(st,['Un viticoltore,','un territorio,','una riva,','un vino.'],{size:58});
+  return{g,sc,L,de,fi,h};
+},update(o,t){
+  cam(o.g,1378,2420,540,GROUND,.33);
+  const k=eo(pr(t,0,.9));o.sc.style.opacity=k;o.sc.style.transform=`translateY(${(1-k)*60}px)`;
+  popLetters(o.L,t,.7,.11);
+  const d=eo(pr(t,1.6,2.3));o.de.style.clipPath=`inset(0 ${(1-d)*100}% 0 0)`;
+  const f=eio(pr(t,2.3,3.4));o.fi.style.clipPath=`inset(0 ${(1-f)*100}% 0 0)`;
+  showLines(o.h,t,3,.13);
+}});
+
+/* ---------- build ---------- */
+function buildStage(i,host){const st=el('div','stage',host);const o=SLIDES[i].build(st,i);grain(st);SLIDES[i].update(o,0);return{st,o}}
+
+const params=new URLSearchParams(location.search);
+if(location.hash==='#render'||params.has('render')){
+  document.body.classList.add('render');
+  const host=el('div','',document.body);host.id='rstage';
+  let cur=null,ci=-1;
+  window.__seek=(i,t)=>{if(i!==ci){host.innerHTML='';cur=buildStage(i,host);ci=i}SLIDES[i].update(cur.o,t)};
+  window.__durs=SLIDES.map(s=>s.dur);
+}else{
+  const track=document.getElementById('track'),frame=document.getElementById('frame'),dots=document.getElementById('dots');
+  const cells=SLIDES.map((s,i)=>{const c=el('div','cell',track);const b=buildStage(i,c);el('i','',dots);return{c,...b}});
+  let idx=0,t0=performance.now(),paused=false,pausedAt=0;
+  const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function fit(){const w=frame.clientWidth;cells.forEach(c=>c.st.style.transform=`scale(${w/W})`)}
+  addEventListener('resize',fit);fit();
+  function go(i){idx=cl(i,0,N-1);track.style.transform=`translateX(${-idx*100}%)`;t0=performance.now();pausedAt=0;
+    [...dots.children].forEach((d,j)=>d.classList.toggle('on',j===idx));
+    document.getElementById('count').textContent=`${idx+1} / ${N}`;
+    document.getElementById('prev').disabled=idx===0;document.getElementById('next').disabled=idx===N-1;
+    // neighbours rest on their final frame so a swipe shows a finished slide
+    cells.forEach((c,j)=>{if(j!==idx)SLIDES[j].update(c.o,j<idx?SLIDES[j].dur:0)})}
+  function loop(now){if(!paused){const s=SLIDES[idx];let t=(now-t0)/1000;if(reduce)t=s.dur;else t=t%(s.dur+1.2);SLIDES[idx].update(cells[idx].o,Math.min(t,s.dur))}requestAnimationFrame(loop)}
+  document.getElementById('prev').onclick=()=>go(idx-1);document.getElementById('next').onclick=()=>go(idx+1);
+  document.getElementById('replay').onclick=()=>{t0=performance.now();if(paused)togglePause()};
+  const pb=document.getElementById('pause');
+  function togglePause(){paused=!paused;if(paused){pausedAt=performance.now()}else{t0+=performance.now()-pausedAt}pb.textContent=paused?'▶ Riproduci':'❚❚ Pausa'}
+  pb.onclick=togglePause;
+  frame.addEventListener('keydown',e=>{if(e.key==='ArrowRight')go(idx+1);if(e.key==='ArrowLeft')go(idx-1)});
+  let sx=null,dx=0;
+  frame.addEventListener('pointerdown',e=>{if(e.target.closest('button'))return;sx=e.clientX;dx=0;track.style.transition='none';frame.setPointerCapture(e.pointerId)});
+  frame.addEventListener('pointermove',e=>{if(sx==null)return;dx=e.clientX-sx;track.style.transform=`translateX(calc(${-idx*100}% + ${dx}px))`});
+  const end=()=>{if(sx==null)return;track.style.transition='';const w=frame.clientWidth;sx=null;if(dx<-w*.15)go(idx+1);else if(dx>w*.15)go(idx-1);else go(idx)};
+  frame.addEventListener('pointerup',end);frame.addEventListener('pointercancel',end);
+  document.getElementById('copy').onclick=async e=>{const txt=document.getElementById('captxt').textContent;try{await navigator.clipboard.writeText(txt);e.target.textContent='Copiata'}catch{const r=document.createRange();r.selectNodeContents(document.getElementById('captxt'));const s=getSelection();s.removeAllRanges();s.addRange(r);e.target.textContent='Testo selezionato'}setTimeout(()=>e.target.textContent='Copia didascalia',1800)};
+  go(0);requestAnimationFrame(loop);
+}
+</script>
