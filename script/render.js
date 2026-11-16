@@ -8,7 +8,8 @@ const {execFileSync}=require('child_process');const fs=require('fs');
   await p.goto('file://'+S+'/build/local.html#render');
   await p.evaluate(async()=>{for(const f of ['italic 500 20px Archivo','italic 700 20px Archivo','italic 800 20px Archivo','italic 900 20px Archivo','500 20px Archivo','800 20px Archivo','500 20px "IBM Plex Mono"'])await document.fonts.load(f);await document.fonts.ready});
   const durs=await p.evaluate(()=>__durs);fs.mkdirSync(S+'/video',{recursive:true});
-  for(let i=0;i<durs.length;i++){
+  const only=process.argv[3]?process.argv[3].split(',').map(n=>+n-1):null;
+  for(let i=0;i<durs.length;i++){if(only&&!only.includes(i))continue;
     const dir=S+'/build/frames/'+i;fs.rmSync(dir,{recursive:true,force:true});fs.mkdirSync(dir,{recursive:true});
     const n=Math.round(durs[i]*FPS);
     for(let f=0;f<n;f++){await p.evaluate(([i,t])=>__seek(i,t),[i,f/FPS]);await p.screenshot({path:`${dir}/${String(f).padStart(4,'0')}.png`})}

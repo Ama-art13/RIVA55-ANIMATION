@@ -343,17 +343,17 @@ SLIDES.push({dur:7,build(st,i){
   const svg=sv('svg',{class:'full',viewBox:'0 0 1080 1350'},st);
   const v=sv('line',{x1:240,y1:0,x2:240,y2:GROUND,stroke:'var(--ink)','stroke-width':10,'stroke-dasharray':GROUND,'stroke-dashoffset':GROUND},svg);
   const r=rng(11);
-  const salt=[];for(let j=0;j<16;j++){const s=sv('rect',{width:8+r()*8,height:8+r()*8,fill:'none',stroke:'var(--ink)','stroke-width':2.5},svg);salt.push({s,x:80+r()*120,y:200+r()*900,ph:r()*6})}
+  const fizz=[];for(let j=0;j<22;j++)fizz.push({c:sv('circle',{r:3+r()*9,fill:'none',stroke:'var(--ink)','stroke-width':2.5},svg),x:60+r()*150,sp:70+r()*110,ph:r()*30,w:r()*6});
   const bub=[];for(let j=0;j<12;j++)bub.push({c:sv('circle',{r:4+r()*7,fill:'none',stroke:'var(--ink)','stroke-width':2.5},svg),x:264+r()*30,sp:120+r()*120,ph:r()*20});
   const mask=el('div','',st);Object.assign(mask.style,{left:'246px',top:'0',width:'834px',height:'1100px',overflow:'hidden'});
   const words=['Verticale.','Sapido.','Fresco.'].map((w,j)=>{const e=el('div','',mask,w);Object.assign(e.style,{left:'44px',top:(250+j*190)+'px',font:'italic 900 116px/1 var(--display)',textTransform:'uppercase',letterSpacing:'-.03em',whiteSpace:'nowrap'});return e});
   const s=sub(st,'Dritto e teso: grande sapidità,<br>grande freschezza.',870);s.style.left='292px';s.style.width='700px';
-  return{v,salt,bub,words,s};
+  return{v,fizz,bub,words,s};
 },update(o,t){
   o.v.setAttribute('stroke-dashoffset',GROUND*(1-eio(pr(t,0,1.1))));
   o.words.forEach((w,j)=>{const k=eo(pr(t,.9+j*.45,1.6+j*.45));w.style.transform=`translateX(${(1-k)*-760}px)`});
   fade(o.s,t,2.6);
-  o.salt.forEach(p=>{const k=pr(t,2+p.ph*.15,2.4+p.ph*.15);p.s.setAttribute('x',p.x);p.s.setAttribute('y',p.y+Math.sin(t*1.2+p.ph)*8);p.s.style.opacity=k*(.55+.45*Math.sin(t*3+p.ph))});
+  o.fizz.forEach(b=>{const tt=Math.max(0,t-1.6)+b.ph;const y=GROUND-20-((tt*b.sp)%(GROUND-60));b.c.setAttribute('cx',b.x+Math.sin(tt*2+b.w)*7);b.c.setAttribute('cy',y);b.c.style.opacity=pr(t,1.6,2.2)*cl((GROUND-20-y)/60)});
   o.bub.forEach(b=>{const tt=Math.max(0,t-1.2)+b.ph;const y=GROUND-20-((tt*b.sp)%(GROUND-40));b.c.setAttribute('cx',b.x+Math.sin(tt*2.5)*5);b.c.setAttribute('cy',y);b.c.style.opacity=pr(t,1.2,1.6)});
 }});
 

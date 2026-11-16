@@ -42,7 +42,8 @@ python3 script/build.py .
 node script/shots.js . '[[0,6.4],[8,7.9]]'
 
 # 4. video finali in video/
-node script/render.js .
+node script/render.js .        # tutte le slide
+node script/render.js . 8      # solo la slide 8 (anche "2,8")
 ```
 
 I testi si cambiano in `anteprima/src.html`: ogni slide è un blocco `SLIDES.push({...})` con durata, costruzione e animazione. Dopo una modifica, rilanciare i passi 2 e 4.
