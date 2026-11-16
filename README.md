@@ -23,6 +23,7 @@ Storytelling animato dell'etichetta **Crivel** di Riva55: Massimo, viticoltore (
 - `anteprima/src.html`: animazioni e testi di tutte le slide (sorgente da modificare).
 - `anteprima/crivel-carosello.html`: anteprima navigabile autonoma, con le immagini incluse. Si apre in qualsiasi browser.
 - `video/`: gli MP4 finali, da caricare in ordine su Instagram.
+- `video/storia/`: versione verticale 9:16 (1080×1920) per le storie: tutto unito (66,5 s) e diviso in due parti sotto i 60 s.
 - `script/`: strumenti per rigenerare tutto.
 
 ## Rigenerare
@@ -44,6 +45,9 @@ node script/shots.js . '[[0,6.4],[8,7.9]]'
 # 4. video finali in video/
 node script/render.js .        # tutte le slide
 node script/render.js . 8      # solo la slide 8 (anche "2,8")
+
+# 5. versione storie 9:16 in video/storia/
+script/storia.sh
 ```
 
 I testi si cambiano in `anteprima/src.html`: ogni slide è un blocco `SLIDES.push({...})` con durata, costruzione e animazione. Dopo una modifica, rilanciare i passi 2 e 4.
