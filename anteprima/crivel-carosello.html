@@ -80,7 +80,7 @@ body.render .wrap{display:none}
   </div>
   <div class="cap">
     <h2>Didascalia proposta</h2>
-    <p id="captxt">Massimo è viticoltore. È anche ingegnere, ma il vino non gli esce mai dalla testa.
+    <p id="captxt">Massimo è viticoltore. È anche ingegnere, ma il vino è sempre nei suoi pensieri.
 
 In etichetta lo vedete alla scrivania, con un imbuto in testa. Quell'imbuto ha una forma precisa: è il Crivel, la sua riva più significativa, che dà il nome a questo vino.
 
@@ -275,7 +275,7 @@ SLIDES.push({dur:7.5,build(st,i){
   const DOTS=[[S4TIP[0]+34,S4TIP[1]-26,9],[S4TIP[0]+72,S4TIP[1]-14,13],[S4TIP[0]+112,S4TIP[1]+10,18]];
   const dots=DOTS.map(([x,y,r])=>sv('circle',{cx:x,cy:y,r,fill:'var(--paper)',stroke:'var(--ink)','stroke-width':5},svg));
   cloud.style.transformBox='fill-box';cloud.style.transformOrigin='0% 80%';
-  const h=headline(st,['Ma il vino','non gli esce','mai dalla testa.'],{size:76});
+  const h=headline(st,['Il vino','è sempre nei','suoi pensieri.'],{size:76});
   const s=sub(st,'Anche alla scrivania,<br>la testa resta in vigna.',372);
   return{g,cloud,dots,hill,edge,sun,rows,h,s};
 },update(o,t){

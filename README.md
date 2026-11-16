@@ -9,7 +9,7 @@ Storytelling animato dell'etichetta **Crivel** di Riva55: Massimo, viticoltore (
 | 01 | Cosa ci fa un imbuto in testa a un viticoltore? |
 | 02 | Massimo è un viticoltore. |
 | 03 | E anche ingegnere. |
-| 04 | Ma il vino non gli esce mai dalla testa. |
+| 04 | Il vino è sempre nei suoi pensieri. |
 | 05 | Quell'imbuto è il Crivel. |
 | 06 | La vigna dà il nome al vino. |
 | 07 | Rifermentato col fondo. |
