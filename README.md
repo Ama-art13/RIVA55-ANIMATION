@@ -1,20 +1,20 @@
 # Crivel · carosello Instagram animato
 
-Storytelling animato dell'etichetta **Crivel** di Riva55: Massimo, viticoltore (e ingegnere), con l'imbuto in testa che ha la forma della sua riva più significativa, il Crivel. Vino bianco frizzante col fondo.
+Storytelling animato dell'etichetta **Crivel** di Riva55: Massimo, vignaiolo (e ingegnere), con l'imbuto in testa che ha la forma della sua riva più significativa, il Crivel. Vino bianco frizzante col fondo.
 
 9 slide video, 1080×1350 (4:5), 30 fps.
 
 | # | Slide |
 |---|-------|
-| 01 | Cosa ci fa un imbuto in testa a un viticoltore? |
-| 02 | Massimo è un viticoltore. |
-| 03 | E anche ingegnere. |
+| 01 | Cosa ci fa un imbuto in testa a un vignaiolo? |
+| 02 | Massimo è un vignaiolo. |
+| 03 | È anche ingegnere. |
 | 04 | Il vino è sempre nei suoi pensieri. |
 | 05 | Quell'imbuto è il Crivel. |
 | 06 | La vigna dà il nome al vino. |
 | 07 | Rifermentato col fondo. |
 | 08 | Verticale. Sapido. Fresco. |
-| 09 | Un viticoltore, un territorio, una riva, un vino. |
+| 09 | Un vignaiolo, un territorio, una riva, un vino. |
 
 ## Struttura
 

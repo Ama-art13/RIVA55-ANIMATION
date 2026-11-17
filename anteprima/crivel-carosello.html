@@ -80,7 +80,7 @@ body.render .wrap{display:none}
   </div>
   <div class="cap">
     <h2>Didascalia proposta</h2>
-    <p id="captxt">Massimo è viticoltore. È anche ingegnere, ma il vino è sempre nei suoi pensieri.
+    <p id="captxt">Massimo è vignaiolo. È anche ingegnere, ma il vino è sempre nei suoi pensieri.
 
 In etichetta lo vedete alla scrivania, con un imbuto in testa. Quell'imbuto ha una forma precisa: è il Crivel, la sua riva più significativa, che dà il nome a questo vino.
 
@@ -153,7 +153,7 @@ SLIDES.push({dur:6.5,build(st,i){
   const ground=chrome(st,i);
   const sh=el('div','',st);Object.assign(sh.style,{left:'390px',top:(GROUND-14)+'px',width:'420px',height:'26px',borderRadius:'50%',background:'var(--ink)'});
   const f=el('img','',st);f.src=A.imbuto;f.alt='';Object.assign(f.style,{width:(590*.98)+'px',height:(784*.98)+'px',left:(600-295*.98)+'px',top:(GROUND-784*.98+6)+'px',transformOrigin:'50% 100%'});
-  const h=headline(st,['Cosa ci fa','un imbuto','in testa a un','viticoltore?'],{size:76});
+  const h=headline(st,['Cosa ci fa','un imbuto','in testa a un','vignaiolo?'],{size:76});
   const sw=el('div','glyph',st,'scorri →');Object.assign(sw.style,{left:'72px',top:'1120px',font:'italic 800 30px/1 var(--display)',textTransform:'uppercase',letterSpacing:'.04em'});
   return{f,sh,h,sw,ground};
 },update(o,t){
@@ -194,7 +194,7 @@ SLIDES.push({dur:7,build(st,i){
     }
     rows.push({wire,posts,vines,k});
   }
-  const h=headline(st,['Massimo è','un viticoltore.']);
+  const h=headline(st,['Massimo è','un vignaiolo.']);
   const s=sub(st,'Passa le giornate tra i filari,<br>sulle sue rive.',318);
   return{hill,edge,sun,rows,h,s};
 },update(o,t){
@@ -214,7 +214,7 @@ SLIDES.push({dur:7,build(st,i){
 SLIDES.push({dur:7,build(st,i){
   chrome(st,i);
   const g=group(st);img('scena',g);
-  const h=headline(st,['E anche','ingegnere.']);
+  const h=headline(st,['È anche','ingegnere.']);
   const s=sub(st,'Quando non è in vigna,<br>progetta e calcola.',330);
   const GL=[['Δh',790,330],['90°',950,330],['Σ F = 0',660,420],['± 0,01',890,420],['Ø 42',770,500],['1:50',950,500]];
   const gl=GL.map(([t,x,y],j)=>{const e=el('div','glyph',st,t);Object.assign(e.style,{left:x+'px',top:y+'px'});return{e,x,y,j}});
@@ -393,7 +393,7 @@ SLIDES.push({dur:7,build(st,i){
 SLIDES.push({dur:8,build(st,i){
   chrome(st,i,{band:false,num:false});
   const g=group(st);const sc=img('scena',g);const L=lettering(g);const de=img('descr',g);const fi=img('firma',g);
-  const h=headline(st,['Un viticoltore,','un territorio,','una riva,','un vino.'],{size:58});
+  const h=headline(st,['Un vignaiolo,','un territorio,','una riva,','un vino.'],{size:58});
   return{g,sc,L,de,fi,h};
 },update(o,t){
   cam(o.g,1378,2420,540,GROUND,.33);
